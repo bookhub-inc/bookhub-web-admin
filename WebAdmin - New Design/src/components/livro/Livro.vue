@@ -22,6 +22,7 @@
                 <th>Nº Páginas</th>
                 <th>Status</th>
                 <th>Editar</th>
+                <th>Excluir</th>
               </tr>
             </thead>
             <tbody>
@@ -35,11 +36,7 @@
                 <th><button id="aprovado" type="button" class="btn btn-info">Aprovado</button></th>
                 <th><button id="btn-exibir-formulario" type="button" class="btn btn-success"
                 v-on:click="FormEditar(livro.id)">Editar</button></th>
-                <div v-if="livro.aprovado = true">
-                </div>
-                <div v-if="livro.aprovado = false">
-                  <th><button id="rejeitado" type="button" class="btn btn-primary">Rejeitado</button></th>
-                </div>
+                <th> <button id="excluir" type="button" class="btn btn-danger" v-on:click="deletar(livro.id)" >Excluir</button></th>
               </tr>
             </tbody>
           </table>
@@ -47,7 +44,7 @@
       </div>
     </div>
 
-    <div id="formularioedicao" class="format" v-show="formularioedicao" v-on:submit.prevent="salvar()">
+    <div id="formularioedicao" class="format" v-show="formularioedicao" v-on:submit.prevent="salvareditar()">
       <div class="row">
         <div class="col-sm">
           <form action="/" method="PUT" id="galeriaForm">
@@ -111,32 +108,31 @@
               />
             </div>
 
-            <div v-if="registro.aprovado==true" class="form-group">
-              <label for="aprovado">Aprovado ? </label>
-              <input type="checkbox"
-                class="checkbox"
-                id="aprovado"
-                name="aprovado"
-                value="true"
-                v-model="registro.aprovado"
+            <div class="form-group">
+              <label for="dataLancamento">Data de lançamento</label>
+              <input
+                type="date"
+                min="0"
+                class="form-control"
+                id="dataLancamento"
+                name="dataLancamento"
+                v-model="registro.dataLancamento"
               />
             </div>
+        
 
-            <div v-else class="form-group">
-              <label for="aprovado">Aprovado ? </label>
-              <input type="checkbox"
-                class="checkbox"
-                id="aprovado"
-                name="aprovado"
-                value="false"
-                v-model="registro.aprovado"
-              />
-            </div>
+              {{registro}}
 
             <div class="form-inline">
-              <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2" v-on:click = salvareditar()>Salvar</button>
-              <button id="btn-cadastrar-operacao" type="button" class="btn btn-primary" v-on:click = retonarTela() >Cancelar</button>
+              <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2" v-on:click ="salvareditar()">Salvar</button>
+              <button id="btn-cadastrar-operacao" type="button" class="btn btn-primary" v-on:click ="retonarTela()" >Cancelar</button>
             </div>
+
+            <div>
+              <p></p>
+              <button id="excluir" type="button" class="btn btn-danger" v-on:click="deletar(livro.id)" >Excluir</button>
+            </div>
+
           </form>
         </div>
       </div>
@@ -196,7 +192,7 @@
             </div>
 
             <div class="form-group">
-              <label for="autor">Numero páginas</label>
+              <label for="npaginas">Numero páginas</label>
               <input
                 type="number"
                 min="0"
@@ -208,20 +204,22 @@
             </div>
 
             <div class="form-group">
-              <label for="autor">Editora</label>
+              <label for="dataLancamento">Data de lançamento</label>
               <input
-                type="text"
+                type="date"
+                min="0"
                 class="form-control"
-                id="editora"
-                name="editora"
-                v-model="registro.editora"
+                id="dataLancamento"
+                name="dataLancamento"
+                v-model="registro.dataLancamento"
               />
             </div>
 
+              {{registro}}
 
             <div class="form-inline">
-              <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2" v-on:click ="salvar()">Salvar</button>
-              <button id="btn-cadastrar-operacao" type="button" class="btn btn-primary" v-on:click = retonarTela() >Cancelar</button>
+              <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2">Salvar</button>
+              <button id="btn-cadastrar-operacao" type="button" class="btn btn-primary" v-on:click ="retonarTela()" >Cancelar</button>
             </div>
           </form>
         </div>
@@ -246,7 +244,7 @@ export default {
       formularioedicao: false,
       listagem: [],
       mensagem:"",
-      registro: {id:null,nome:"",autor:"",npaginas:"",editora:"",url:"",aprovado:""},
+      registro: {id:null},
       registroJson : null
     }
   },
@@ -300,20 +298,23 @@ export default {
         this.listarDados();
         this.exibirListagemForm = true;
         this.formulariocadastro = false;
-        this.exibirMsgAlert(response.nome + " Alterado com sucesso! ","sucesso");
+        this.limpaForm();
+        this.exibirMsgAlert(response.nome + " Cadastrado com sucesso ! ","sucesso");
       }).catch(response => {
         this.exibirMsgAlert("Erro ao inserir: "+response,"erro");
       });
     }, 
+
     limpaForm(){
-      this.registro = {id:null,nome:"",autor:"",npaginas:"",editora:"",url:""};
+      this.registro = {id:null,nome:"",autor:"",npaginas:null,editora:"",url:""};
     },
 
       salvareditar(){
       this.$materialService.alterarLivro(this.registro).then(response => {
-         this.listarDados();
+        this.listarDados();
+         this.limpaForm();
         this.retonarTela();
-        this.exibirMsgAlert(response + " Alterado com sucesso! " + this.registro.nome ,"sucesso");
+        this.exibirMsgAlert(response.nome + " Alterado com sucesso! " ,"sucesso");
       }).catch(response => {
         this.exibirMsgAlert("Erro ao inserir: "+response,"erro");
       });
@@ -323,20 +324,24 @@ export default {
     FormEditar(id){
       this.limparMsgAlert();
       this.exibirListagemForm = false;
-      this.formulariocadastro = false;
-      this.formularioedicao = true;
       this.$materialService.getIdLivro(id).then(response => {
+        this.formularioedicao = true;
+        this.registro.id = response.id;
         this.registro.url = response.url;
         this.registro.nome = response.nome;
         this.registro.autor = response.autor;
         this.registro.editora = response.editora;
         this.registro.aprovado = response.aprovado;
         this.registro.npaginas = response.npaginas;
-      }
-      ).catch(response => {
+        this.registro.dataAtualizacao = Date.now();
+        this.registro.aprovado = true;
+        this.registro.dataLancamento = response.dataLancamento;
+        this.registro.motivo = null;
+      }).catch(response => {
         this.exibirMsgAlert(response,"erro");
       })
     },
+
     deletar(id){
        this.$materialService.deleteLivro(id).then(response => {
          if(response.ok){

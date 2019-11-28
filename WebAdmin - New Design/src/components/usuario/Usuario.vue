@@ -17,7 +17,6 @@
               <tr>
                 <th>Id</th>
                 <th>Id Avatar</th>               
-                <th>Avatar</th>
                 <th>Usuário</th>
                 <th>Senha</th>
                 <th>Nome</th>
@@ -30,28 +29,13 @@
             <tbody>
               <tr v-for="usuario in filterUsuarios" :key="usuario.id">
                 <th>{{usuario.id}}</th>
-                <th>
-                  <div v-if= "usuario.idAvatar == 1"> 
-                   <img class="img-circle" v-bind:src="'https://images-na.ssl-images-amazon.com/images/I/81opKw7oHQL._SY445_.jpg'" height="52px" width="52px">
-                  </div>
-                  <div v-if= "usuario.idAvatar == 2">
-                      <img class="img-circle" v-bind:src="'https://cdn.onebauer.media/one/empire-tmdb/films/10996/images/dZIRC5SwtfScz3DSSsMPqyTjsni.jpg?quality=50&width=1800&ratio=16-9&resizeStyle=aspectfill&format=jpg'" height="52px" width="52px">
-                  </div>
-                  <div v-if= "usuario.idAvatar == 3">
-                    <img class="img-circle" v-bind:src="'https://vignette.wikia.nocookie.net/cartooncharacters/images/2/2b/Jerrythemouse.jpg/revision/latest?cb=20180711194126'" height="52px" width="52px">
-                  </div>
-                  <div v-if= "usuario.idAvatar == 4">
-                    <img class="img-circle" v-bind:src="'https://lumiere-a.akamaihd.net/v1/images/ct_mickeymouseandfriends_mickey_ddt-16970_4e99445d.jpeg?region=0,0,600,600&width=480'" height="52px" width="52px">
-                  </div>
-                  </th>
-                 <th>{{usuario.idAvatar}}</th>
+                <th>{{usuario.idAvatar}}</th>
                 <th>{{usuario.login}}</th>
                 <th>{{usuario.senha}}</th>
                 <th>{{usuario.nome + " " + usuario.sobrenome}}</th>
                 <th>{{usuario.email}}</th>
                 <th>{{usuario.telefone}}</th>
-                <th><button id="btn-exibir-formulario" type="button" class="btn btn-success"
-      v-on:click="prepararFormEditar(usuario.id)">Editar</button></th>
+                <th><button id="btn-exibir-formulario" type="button" class="btn btn-success" v-on:click="FormEditar(usuario.id)">Editar</button></th>
                 <th><button id="btn-exibir-formulario" type="button" class="btn btn-danger"
       v-on:click="deletar(usuario.id)">Excluir</button></th>
               </tr>
@@ -65,7 +49,18 @@
       <div class="row">
         <div class="col-sm">
           <form action="/" method="PUT" id="galeriaForm">
-             
+               
+               <div class="form-group">
+              <label for="Id">Usuário</label>
+              <input
+                type="number"
+                class="form-control"
+                id="id"
+                name="id"
+                disabled = "disabled"
+                v-model="registro.id"
+              />
+            </div>
 
             <div class="form-group">
               <label for="usuario">Usuário</label>
@@ -79,27 +74,16 @@
             </div>
 
             <div class="form-group">
-              <label for="usuario">Avatar</label>
+              <label for="idAvatar">id Avatar</label>
               <input
                 type="text"
                 class="form-control"
-                id="avatar"
-                name="avatar"
+                id="idAvatar"
+                name="idAvatar"
                 v-model="registro.idAvatar"
               />
             </div>
-            <div v-if= "this.registro.idAvatar == 1"> 
-            <img class="img-circle" v-bind:src="'https://images-na.ssl-images-amazon.com/images/I/81opKw7oHQL._SY445_.jpg'" width="150px" height="100px">
-            </div>
-            <div v-if= "this.registro.idAvatar == 2">
-              <img class="img-circle" v-bind:src="'https://cdn.onebauer.media/one/empire-tmdb/films/10996/images/dZIRC5SwtfScz3DSSsMPqyTjsni.jpg?quality=50&width=1800&ratio=16-9&resizeStyle=aspectfill&format=jpg'" width="150px" height="100px">
-            </div>
-            <div v-if= "this.registro.idAvatar == 3">
-              <img class="img-circle" v-bind:src="'https://vignette.wikia.nocookie.net/cartooncharacters/images/2/2b/Jerrythemouse.jpg/revision/latest?cb=20180711194126'" width="150px" height="100px">
-            </div>
-            <div v-if= "this.registro.idAvatar == 4">
-              <img class="img-circle" v-bind:src="'https://lumiere-a.akamaihd.net/v1/images/ct_mickeymouseandfriends_mickey_ddt-16970_4e99445d.jpeg?region=0,0,600,600&width=480'" width="150px" height="100px">
-            </div>
+
             <div class="form-group">
               <label for="senha">Senha</label>
               <input
@@ -156,8 +140,10 @@
               />
             </div> 
 
+              {{registro}}
+
             <div class="form-inline">
-              <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2" v-on:click= salvareditar()>Salvar</button>
+              <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2">Salvar</button>
               <button id="btn-cadastrar-operacao" type="button" class="btn btn-primary" v-on:click= retonarTela()>Cancelar</button>
             </div>
           </form>
@@ -175,7 +161,7 @@
             <div class="form-group">
               <label for="usuario">Usuário</label>
               <input
-                type="number"
+                type="text"
                 class="form-control"
                 id="usuario"
                 name="usuario"
@@ -184,24 +170,24 @@
             </div>
 
             <div class="form-group">
-              <label for="usuario">Senha</label>
+              <label for="senha">Senha</label>
               <input
                 type="text"
                 class="form-control"
-                id="usuario"
-                name="usuario"
+                id="senha"
+                name="senha"
                 v-model="registro.senha"
               />
             </div>
 
             <div class="form-group">
-              <label for="usuario">Foto</label>
+              <label for="idAvatar">Id Avatar</label>
               <input
                 type="number"
                 min="0"
                 class="form-control"
-                id="usuario"
-                name="usuario"
+                id="idAvatar"
+                name="idAvatar"
                 v-model="registro.idAvatar"
               />
             </div>
@@ -253,8 +239,10 @@
               />
             </div> 
 
+              {{registro}}
+
             <div class="form-inline">
-              <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2" v-on:click= salvar()>Salvar</button>
+              <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2">Salvar</button>
               <button id="btn-cadastrar-operacao" type="button" class="btn btn-primary" v-on:click= retonarTela()>Cancelar</button>
             </div>
           </form>
@@ -276,7 +264,7 @@ export default {
       exibirListagemForm: true,
       listagem: [],
       mensagem:"",
-      registro: {id:null,login:"",nome:"",email:"",idAvatar:""},
+      registro: {id:null},
       registroJson : null
     }
   },
@@ -332,24 +320,18 @@ export default {
         this.retonarTela();
         this.exibirMsgAlert(response.id + " salvo com sucesso! ","sucesso");
       }).catch(response => {
-        this.exibirMsgAlert("Erro ao atualizar: "+response,"erro");
+        this.exibirMsgAlert("Erro ao inserir: "+response,"erro");
       });
+      
     }, 
-
-    getAvatar(){
-    this.$materialService.getTodosAvatar().then(response => {
-        this.registro.id = response.id;
-        this.registro.url = response.url;
-    }).catch(response => {
-        this.exibirMsgAlert("Avatar não cadastrado" + response +"erro");
-    });
-    },
+ 
 
     salvar(){
       this.$materialService.adicionarUsuario(this.registro).then(response => {
         this.listarDados();
         this.exibirMsgAlert(response.nome + " salvo com sucesso! ","sucesso");
         this.exibirListagemForm = true;
+        this.formulariocadastrar = false;
       }).catch(response => {
         this.exibirMsgAlert("Erro ao inserir: "+response,"erro");
       });
@@ -357,20 +339,41 @@ export default {
     limpaForm(){
       this.registro = {id:null,login:"",nome:"",sobrenome:"",telefone:""};
     },
+
+
+    FormEditar(id){
+      this.limparMsgAlert();
+      this.exibirListagemForm = false;
+      this.formulariocadastro = false;
+      this.formularioedicao = true;
+      this.$materialService.getIdUsuario(id).then(response => {
+        this.registro.email = response.email;
+        this.registro.id = response.id;
+        this.registro.idAvatar = response.idAvatar;
+        this.registro.login = response.login;
+        this.registro.nome = response.nome;
+        this.registro.senha = response.senha;
+        this.registro.sobrenome = response.sobrenome;
+        this.registro.telefone = response.telefone;
+      }
+      ).catch(response => {
+        this.exibirMsgAlert(response,"erro");
+      })
+    },
+
     prepararFormEditar(id){
       this.limparMsgAlert();
       this.exibirListagemForm = false;
       this.formularioeditar = true;
       this.$materialService.getIdUsuario(id).then(response => {
+        this.registro.email = response.email;
         this.registro.id = response.id;
+        this.registro.idAvatar = response.idAvatar;
+        this.registro.login = response.login;
         this.registro.nome = response.nome;
         this.registro.senha = response.senha;
         this.registro.sobrenome = response.sobrenome;
-        this.registro.email = response.email;
-        this.registro.login = response.login;
         this.registro.telefone = response.telefone;
-        this.registro.idAvatar = response.idAvatar;
-        this.registro.dataUltimoAcesso = response
         }).catch(response => {
         this.exibirMsgAlert(response,"erro");
       })

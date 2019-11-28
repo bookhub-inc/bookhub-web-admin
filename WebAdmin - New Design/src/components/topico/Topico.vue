@@ -64,7 +64,7 @@
       </div>
     </div>
     
-    <div id="formularioeditar" class="format" v-show="FormularioEditar" v-on:submit.prevent="salvar()"> 
+    <div id="formularioeditar" class="format" v-show="FormularioEditar" v-on:submit.prevent="salvareditar()"> 
       <div class="row">
         <div class="col-sm">
           <form action="/" method="PUT" id="galeriaForm">
@@ -101,6 +101,8 @@
                 v-model="registro.descricao"
               />
             </div>
+
+              {{registro}}
 
             <div class="form-inline">
               <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2" v-on:click= salvareditar()>Salvar</button>
@@ -151,7 +153,10 @@
                 v-model="registro.idUsuario"
               />
             </div>
-            
+
+
+            {{registro}}
+
             <div class="form-inline">
               <button id="btn-cadastrar" type="submit" class="btn btn-primary mr-sm-2">Salvar</button>
               <button id="btn-cadastrar-operacao" type="button" class="btn btn-primary" v-on:click="retonarTela()">Cancelar</button>
@@ -178,11 +183,12 @@ export default {
       FormularioEditar: false,
       FormularioCadastrar: false,
       mensagem:"",
-      registro: {id:null,titulo:"",dataCriacao:"",login:""},
+      registro: {id:null,titulo:"",idUsuario:null,descricao:"",dataCriacao:""},
       registroJson : null
     }
   },
   methods: {
+
 
     retonarTela(){
         this.FormularioEditar = false;
@@ -228,7 +234,7 @@ export default {
     },
 
     salvareditar(){
-      this.$materialService.alterarTopico(this.registro).then(response => {
+      this.$materialService.alterarTopico(this.registro.id).then(response => {
          this.listarDados();
         this.retonarTela();
         this.exibirMsgAlert(response.id + " salvo com sucesso! ","sucesso");
@@ -249,7 +255,7 @@ export default {
       });
     }, 
     limpaForm(){
-      this.registro = {id:null,titulo:"",dataCriacao:"",login:"",descricao:""};
+      this.registro = {};
     },
     prepararFormEditar(id){
       this.limparMsgAlert();
@@ -257,11 +263,9 @@ export default {
       this.FormularioCadastrar = false;
       this.FormularioEditar = true;
       this.$materialService.getIdTopico(id).then(response => {
-        this.registro.id = response.id;
-        this.registro.dataCriacao = response.dataCriacao;
-        this.registro.login = response.login;
-        this.registro.titulo = response.titulo;
         this.registro.descricao = response.descricao;
+        this.registro.id = response.id;
+        this.registro.titulo = response.titulo;
       }).catch(response => {
         this.exibirMsgAlert(response,"erro");
       })
@@ -287,7 +291,9 @@ export default {
          }
        })
     }
-  },mounted() {
+  },
+  
+  mounted() {
     this.listarDados() 
   },
 
